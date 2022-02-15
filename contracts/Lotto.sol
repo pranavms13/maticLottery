@@ -44,7 +44,7 @@ contract Lotto is Pausable, AccessControl{
     }
 
     constructor(address _L){
-        priceFeed = AggregatorV3Interface(0xAB594600376Ec9fD91F8e885dADF0CE036862dE0);
+        priceFeed = AggregatorV3Interface(0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada);
         LottoTickets = IERC721(_L);
         startDay = 1642420800;
         lotteryPeriod = startDay + 5 days;
@@ -110,32 +110,34 @@ contract Lotto is Pausable, AccessControl{
         startLottery(claimperiod, 5);
     }
 
+    // Seperate the NFT Issuing part with the loop into a function
+
     function BuyTicket() public payable{
         require(block.timestamp < lotteryPeriod, "Lottery Period Ended: No More buying allowed");
-        require(msg.value >= getDollar(), "BTS: Price should be greater than a dollar");
-        // uint extra = 0;
-        if(msg.value >= getTenDollar()){
-            for(uint j = 1;j <= 10;j += 1){
+        //---------
+        uint price = getPrice();
+        uint onedollar = (uint(1e14) / price) * 1e12; // a dollar in matic
+
+        require(msg.value >= onedollar, "BTS: Price should be greater than a dollar");
+
+        if(msg.value >= (onedollar * 10)){
+            uint j=1;
+            while(j <= 10){
                 Players[++Ticket] = msg.sender;
                 LottoTickets.safeMint(msg.sender, Ticket);
+                j += 1;
             }
-            // extra = msg.value - getTenDollar() - gasleft();
-        }else if(msg.value >= getFiveDollar()){
-            for(uint j = 1;j <= 5;j += 1){
+        }else if(msg.value >= (onedollar * 5)){
+            uint j=1;
+            while(j <= 10){
                 Players[++Ticket] = msg.sender;
                 LottoTickets.safeMint(msg.sender, Ticket);
+                j += 1;
             }
-            // extra = msg.value - getFiveDollar() - gasleft();
         }else{
             Players[++Ticket] = msg.sender;
             LottoTickets.safeMint(msg.sender, Ticket);
-            // extra = msg.value - getDollar() - gasleft();
         }
-        
-        // Return if extra paid
-        // if(extra > 0){
-        //     payable(msg.sender).transfer(extra);
-        // }
     }
 
     function AnnounceLotteryWinner() public validate{
