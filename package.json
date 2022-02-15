@@ -1,0 +1,26 @@
+{
+  "name": "maticlottery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pranavms13/maticLottery.git"
+  },
+  "author": "Pranav M S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pranavms13/maticLottery/issues"
+  },
+  "homepage": "https://github.com/pranavms13/maticLottery#readme",
+  "dependencies": {
+    "@chainlink/contracts": "^0.4.0",
+    "@openzeppelin/contracts": "^4.5.0"
+  }
+}

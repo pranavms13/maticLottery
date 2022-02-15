@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract NFTLOTTERY is ERC721, Pausable, AccessControl, ERC721Burnable {
+contract NftLottery is ERC721, Pausable, AccessControl, ERC721Burnable {
     bytes32 public constant CEO = keccak256("CEO");
     bytes32 public constant CTO = keccak256("CTO");
     bytes32 public constant CFO = keccak256("CFO");
