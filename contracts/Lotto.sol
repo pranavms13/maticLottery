@@ -50,6 +50,8 @@ contract Lotto is Pausable, AccessControl{
         lotteryPeriod = startDay + 5 days;
         claimperiod = lotteryPeriod + 2 days;
         _win = false;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(CEO, msg.sender);
     }
 
     // function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
