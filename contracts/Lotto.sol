@@ -77,6 +77,16 @@ contract Lotto is Pausable, AccessControl{
         return (uint(1e14) / price) * 1e12; // a dollar in matic
     }
 
+    function getFiveDollar() public view returns(uint256){
+        uint price = getPrice();
+        return ((uint(1e14) / price) * 1e12)*5; // a dollar in matic
+    }
+
+    function getTenDollar() public view returns(uint256){
+        uint price = getPrice();
+        return ((uint(1e14) / price) * 1e12)*10; // a dollar in matic
+    }
+
     function getPot(uint _pool) public view returns(uint256){
         if(_pool == 1) return PoolAmounts[0];
         else if(_pool == 5) return PoolAmounts[1];
@@ -94,11 +104,11 @@ contract Lotto is Pausable, AccessControl{
 
     function getPlayerCount(uint _pool) public view returns(uint256){
         if(_pool == 1){
-            return Pool1.length;
+            return Pool1.length-1;
         }else if(_pool == 5){
-            return Pool5.length;
+            return Pool5.length-1;
         }else if(_pool == 10){
-            return Pool10.length;
+            return Pool10.length-1;
         }else return 0;
     }
 
