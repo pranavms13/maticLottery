@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-contract NftLottery is ERC721, Pausable, AccessControl, ERC721Burnable {
+contract LuckyMintNFT is ERC721, Pausable, AccessControl, ERC721Burnable {
     bytes32 public constant CEO = keccak256("CEO");
     bytes32 public constant CTO = keccak256("CTO");
     bytes32 public constant CFO = keccak256("CFO");
@@ -21,7 +21,7 @@ contract NftLottery is ERC721, Pausable, AccessControl, ERC721Burnable {
         _;
     }
 
-    constructor() ERC721("NFT LOTTERY", "LOTTO") {
+    constructor() ERC721("Lucky Mint NFT", "LMNFT") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(CEO, msg.sender);
     }

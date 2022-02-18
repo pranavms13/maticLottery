@@ -6,12 +6,14 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-contract Lotto is Pausable, AccessControl{
+contract LuckyMintLotto is Pausable, AccessControl{
     address internal _safe = 0xd8806d66E24b702e0A56fb972b75D24CAd656821;
     address public winner;
-    address[] public Pool;
-    uint public PoolAmount;
+    address[] internal Pool;
+    uint internal PoolAmount;
     bool internal claimed;
+    uint internal playerCount;
+    mapping (address => uint) playerticketcount;
 
     // uint internal _FEE = 0.0001 * 1e18;
     uint public winningNumber;
@@ -39,11 +41,9 @@ contract Lotto is Pausable, AccessControl{
     }
 
     constructor(address _L){
-        priceFeed = AggregatorV3Interface(0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada);
+        // priceFeed = AggregatorV3Interface(0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada); // testnet
+        priceFeed = AggregatorV3Interface(0xAB594600376Ec9fD91F8e885dADF0CE036862dE0); // mainnet
         LottoTickets = IERC721(_L);
-        startDay = 1642420800;
-        lotteryPeriod = startDay + 5 days;
-        claimperiod = lotteryPeriod + 2 days;
         _win = false;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(CEO, msg.sender);
@@ -74,11 +74,15 @@ contract Lotto is Pausable, AccessControl{
     }
 
     function getAnnounceDate() public view returns(uint256){
-        return lotteryPeriod + 1 days;
+        return lotteryPeriod;
+    }
+
+    function getTicketCount() public view returns(uint256){
+        return Pool.length;
     }
 
     function getPlayerCount() public view returns(uint256){
-        return Pool.length;
+        return playerCount;
     }
 
     function startLottery(uint _start, uint _duration) public validate {
@@ -93,23 +97,28 @@ contract Lotto is Pausable, AccessControl{
         Pool = new address[](0);
         PoolAmount = 0;
         winner = address(0);
+        claimed = false;
     }
 
     function BuyTicket() public payable{
+        require(playerticketcount[msg.sender] <= 10, "Max Tickets per user is 10");
         require(block.timestamp < lotteryPeriod, "Lottery Period Ended: No More buying allowed");
         uint onedollar = getDollar();
         require(msg.value >= onedollar, "Buy Lottery Ticket: Price should be greater than 1 USD");
         Pool.push(msg.sender); // Pool1 is the 1 USD pool
         LottoTickets.safeMint(msg.sender, (Pool.length * 10) + 1);
+        if(playerticketcount[msg.sender] == 0) playerCount += 1;
+        playerticketcount[msg.sender] += 1;
         PoolAmount +=  msg.value - gasleft();
     }
 
-    function AnnounceLotteryWinner() public validate{
+    function AnnounceLotteryWinner() public validate returns(address){
         require(block.timestamp > lotteryPeriod, "Lottery Period Not Ended: No winners yet");
         require(_win == false, "Cannot Announce winner yet");
         uint winningOne = uint(blockhash(block.number - 1)) % Pool.length;
         winner = Pool[winningOne];
         _win = true;
+        return winner;
     }
 
     function claim() public {
